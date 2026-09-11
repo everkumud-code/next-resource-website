@@ -1,0 +1,8 @@
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const root = __dirname;
+const port = process.env.PORT || 3000;
+const injected = '\n<link rel="stylesheet" href="/site-fixes.css"><script src="/site-fixes.js" defer></script>\n';
+function type(f){return ({'.html':'text/html; charset=utf-8','.js':'application/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp'})[path.extname(f).toLowerCase()]||'application/octet-stream';}
+http.createServer((req,res)=>{let p=decodeURIComponent((req.url||'/').split('?')[0]);if(p==='/')p='/index.html';let f=path.join(root,p.replace(/^\/+/,''));if(!f.startsWith(root))return res.writeHead(403).end('Forbidden');fs.readFile(f,'utf8',(e,d)=>{if(e){return fs.readFile(path.join(root,'index.html'),'utf8',(x,h)=>{if(x)return res.writeHead(404).end('Not found');res.writeHead(200,{'Content-Type':type('.html'),'Cache-Control':'no-store'});res.end(h.replace('</head>',injected+'</head>'));});}if(path.extname(f).toLowerCase()==='.html')d=d.replace('</head>',injected+'</head>');res.writeHead(200,{'Content-Type':type(f),'Cache-Control':'no-store'});res.end(d);});}).listen(port,'0.0.0.0',()=>console.log('Next Resource listening on '+port));
