@@ -1,2 +1,15 @@
 @import url('https://raw.githubusercontent.com/everkumud-code/next-resource-website/994774fc228edfafa226c72a91bf3350b9a17473/styles.css');
 @import url('/hero-fix.css');
+
+/* Work in motion — explicit image-backed gallery */
+.nr-gallery-sec .nr-gallery{position:relative;display:grid;grid-template-columns:1.4fr .8fr .8fr;grid-template-rows:245px 245px;gap:14px;margin-top:50px}
+.nr-gallery-sec .nr-gallery>div{position:relative;overflow:hidden;border-radius:18px;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;isolation:isolate}
+.nr-gallery-sec .nr-gallery>div:before{content:'';position:absolute;inset:0;z-index:0;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;transform:scale(1.01);transition:transform .7s ease}
+.nr-gallery-sec .nr-gallery>div:after{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,8,10,.05) 20%,rgba(5,8,10,.72) 100%);pointer-events:none}
+.nr-gallery-sec .nr-gallery .g1{grid-row:span 2;background-image:url('/visuals/branding.svg')!important}.nr-gallery-sec .nr-gallery .g1:before{background-image:url('/visuals/branding.svg')!important}
+.nr-gallery-sec .nr-gallery .g2{background-image:url('/visuals/web.svg')!important}.nr-gallery-sec .nr-gallery .g2:before{background-image:url('/visuals/web.svg')!important}
+.nr-gallery-sec .nr-gallery .g3{background-image:url('/visuals/media.svg')!important}.nr-gallery-sec .nr-gallery .g3:before{background-image:url('/visuals/media.svg')!important}
+.nr-gallery-sec .nr-gallery .g4{background-image:url('/visuals/analytics.svg')!important}.nr-gallery-sec .nr-gallery .g4:before{background-image:url('/visuals/analytics.svg')!important}
+.nr-gallery-sec .nr-gallery>div:hover:before{transform:scale(1.07)}
+@media(max-width:800px){.nr-gallery-sec .nr-gallery{grid-template-columns:1fr 1fr;grid-template-rows:200px 200px}.nr-gallery-sec .nr-gallery .g1{grid-row:auto}}
+@media(max-width:560px){.nr-gallery-sec .nr-gallery{grid-template-columns:1fr;grid-template-rows:220px 220px 220px 220px}}
