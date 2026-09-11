@@ -1,3 +1,6 @@
-[data-home-link]{font-size:12px;letter-spacing:.02em;padding:10px 2px}
-.nav .links [data-home-link]:hover,.nav .navlinks [data-home-link]:hover{color:var(--blue)}
-@media(max-width:800px){[data-home-link]{display:inline-block!important}}
+[data-home-link]{font-size:12px;letter-spacing:.02em;padding:10px 2px}.nav .links [data-home-link]:hover,.nav .navlinks [data-home-link]:hover{color:var(--blue)}
+/* Hero side-margin correction: keep the approved white/blue layout fully inside the viewport. */
+.hero{padding-left:clamp(32px,6vw,110px)!important;padding-right:clamp(32px,5vw,90px)!important;overflow:hidden!important}
+.hero>div:first-child{margin-left:0!important;max-width:760px!important}
+.hero h1{max-width:760px!important}
+@media(max-width:800px){[data-home-link]{display:inline-block!important}.hero{padding-left:24px!important;padding-right:24px!important}.hero>div:first-child{max-width:100%!important}.hero h1{max-width:100%!important}}
