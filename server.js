@@ -1,0 +1,6 @@
+const http=require('http'),fs=require('fs'),path=require('path'),cms=require('./cms-backend');
+const port=process.env.PORT||3000,root=__dirname;
+const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'application/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp'};
+const server=http.createServer(async(req,res)=>{const p=(req.url||'/').split('?')[0];try{if(await cms.route(req,res,p))return}catch(e){console.error(e);res.writeHead(500);return res.end('Server error')}
+let file=p==='/'?'/index.html':p;if(file==='/admin'||file==='/admin/')file='/admin.html';const full=path.join(root,file);if(!full.startsWith(root)||!fs.existsSync(full)){res.writeHead(404);return res.end('Not found')};if(file==='/index.html'){let html=fs.readFileSync(full,'utf8');html=html.replace('</body>','<script src="/brand-content.js?v=20260911" defer></script></body>');res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});return res.end(html)}res.writeHead(200,{'Content-Type':types[path.extname(full).toLowerCase()]||'application/octet-stream','Cache-Control':'no-cache'});fs.createReadStream(full).pipe(res)});
+server.listen(port,'0.0.0.0',()=>console.log('Next Resource CMS server listening on '+port));
