@@ -1,5 +1,6 @@
 const fs=require('fs'),path=require('path'),crypto=require('crypto'),authConfig=require('./cms-auth');
-const db=path.join(__dirname,'blogs.json'),siteDb=path.join(__dirname,'site-content.json'),sessions=new Map();
+const db=path.join(__dirname,'blogs.json'),siteDb=path.join(__dirname,'site-content.json'),mediaDir=path.join(__dirname,'uploads'),sessions=new Map();
+if(!fs.existsSync(mediaDir))fs.mkdirSync(mediaDir,{recursive:true});
 const read=()=>{try{return JSON.parse(fs.readFileSync(db,'utf8'))}catch{return[]}};
 const write=v=>fs.writeFileSync(db,JSON.stringify(v,null,2));
 const readSite=()=>{try{return JSON.parse(fs.readFileSync(siteDb,'utf8'))}catch{return{heroImage:'/visuals/hero-clean.svg',sections:{}}}};
@@ -17,6 +18,7 @@ if(p==='/api/cms/logout'){sessions.delete(cookie(req));res.writeHead(200,{'Conte
 if(p==='/api/cms/me')return auth(req)?json(res,200,{ok:true}):json(res,401,{error:'Unauthorized'});
 if(p==='/api/cms/site'&&req.method==='GET')return auth(req)?json(res,200,{site:readSite()}):json(res,401,{error:'Unauthorized'});
 if(p==='/api/cms/site'&&req.method==='PUT'){if(!auth(req))return json(res,401,{error:'Unauthorized'});const b=await body(req);if(!b||typeof b!=='object')return json(res,400,{error:'Invalid site data'});writeSite(b);return json(res,200,{site:b})}
+if(p==='/api/cms/media'&&req.method==='POST'){if(!auth(req))return json(res,401,{error:'Unauthorized'});const b=await body(req),data=String(b.data||'');const m=data.match(/^data:image\/(png|jpe?g|webp|gif|svg\+xml);base64,(.+)$/);if(!m)return json(res,400,{error:'Unsupported image'});const ext=m[1]==='jpeg'||m[1]==='jpg'?'jpg':m[1]==='svg+xml'?'svg':m[1];const name=Date.now()+'-'+crypto.randomBytes(4).toString('hex')+'.'+ext;fs.writeFileSync(path.join(mediaDir,name),Buffer.from(m[2],'base64'));return json(res,201,{url:'/uploads/'+name})}
 if(p==='/api/cms/posts'&&req.method==='GET')return auth(req)?json(res,200,{posts:read()}):json(res,401,{error:'Unauthorized'});
 if(p==='/api/cms/posts'&&req.method==='POST'){if(!auth(req))return json(res,401,{error:'Unauthorized'});const b=await body(req),ps=read(),post=normalize(b);if(!post.title||!post.content)return json(res,400,{error:'Title and content are required'});if(ps.some(x=>x.slug===post.slug))return json(res,409,{error:'Slug already exists'});ps.unshift(post);write(ps);return json(res,201,{post})}
 const m=p.match(/^\/api\/cms\/posts\/([^/]+)$/);if(m&&auth(req)){const id=decodeURIComponent(m[1]),ps=read(),i=ps.findIndex(x=>x.id===id);if(i<0)return json(res,404,{error:'Article not found'});if(req.method==='GET')return json(res,200,{post:ps[i]});if(req.method==='DELETE'){ps.splice(i,1);write(ps);return json(res,200,{ok:true})}if(req.method==='PUT'){const post=normalize(await body(req),ps[i]);if(ps.some((x,j)=>j!==i&&x.slug===post.slug))return json(res,409,{error:'Slug already exists'});ps[i]=post;write(ps);return json(res,200,{post})}}
