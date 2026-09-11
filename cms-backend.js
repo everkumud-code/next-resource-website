@@ -1,4 +1,4 @@
-const fs=require('fs'),path=require('path'),crypto=require('crypto');
+const fs=require('fs'),path=require('path'),crypto=require('crypto'),authConfig=require('./cms-auth');
 const db=path.join(__dirname,'blogs.json'),sessions=new Map();
 const read=()=>{try{return JSON.parse(fs.readFileSync(db,'utf8'))}catch{return[]}};
 const write=v=>fs.writeFileSync(db,JSON.stringify(v,null,2));
@@ -10,7 +10,7 @@ const slug=s=>String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').repl
 const clean=(v,n=100000)=>String(v??'').trim().slice(0,n);
 const normalize=(b,o={})=>{const title=clean(b.title,180),sl=slug(b.slug||title);return{id:o.id||crypto.randomUUID(),title,slug:sl,category:clean(b.category,80)||'Digital Growth',author:clean(b.author,80)||'Next Resource',excerpt:clean(b.excerpt,500),content:clean(b.content),metaTitle:clean(b.metaTitle,70)||title.slice(0,60),metaDescription:clean(b.metaDescription,170)||clean(b.excerpt,160)||title,keywords:clean(b.keywords,300),canonical:clean(b.canonical,300)||('/blog/'+sl),ogImage:clean(b.ogImage,500),date:clean(b.date,30)||new Date().toISOString().slice(0,10),updatedAt:new Date().toISOString()}};
 async function route(req,res,p){
-if(p==='/api/cms/login'&&req.method==='POST'){const b=await body(req);if(b.email!==(process.env.CMS_ADMIN_EMAIL||'')||b.password!==(process.env.CMS_ADMIN_PASSWORD||''))return json(res,401,{error:'Invalid credentials'});const t=crypto.randomBytes(32).toString('hex');sessions.set(t,Date.now()+86400000);res.writeHead(200,{'Content-Type':'application/json','Set-Cookie':`nr_cms=${t}; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400`});return res.end('{"ok":true}')}
+if(p==='/api/cms/login'&&req.method==='POST'){const b=await body(req);if(!authConfig.valid(b.email,b.password))return json(res,401,{error:'Invalid credentials'});const t=crypto.randomBytes(32).toString('hex');sessions.set(t,Date.now()+86400000);res.writeHead(200,{'Content-Type':'application/json','Set-Cookie':`nr_cms=${t}; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400`});return res.end('{"ok":true}')}
 if(p==='/api/cms/logout'){sessions.delete(cookie(req));res.writeHead(200,{'Content-Type':'application/json','Set-Cookie':'nr_cms=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0'});return res.end('{"ok":true}')}
 if(p==='/api/cms/me')return auth(req)?json(res,200,{ok:true}):json(res,401,{error:'Unauthorized'});
 if(p==='/api/cms/posts'&&req.method==='GET')return auth(req)?json(res,200,{posts:read()}):json(res,401,{error:'Unauthorized'});
