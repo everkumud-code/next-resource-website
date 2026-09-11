@@ -2,7 +2,7 @@ const http=require('http'),fs=require('fs'),path=require('path'),cms=require('./
 const pages=require('./blog-pages').make(cms.read);
 const port=process.env.PORT||3000,root=__dirname;
 const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'application/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp'};
-const server=http.createServer(async(req,res)=>{const p=(req.url||'/').split('?')[0];try{if(await cms.route(req,res,p))return}catch(e){console.error(e);res.writeHead(500);return res.end('Server error')}
+const server=http.createServer(async(req,res)=>{const p=(req.url||'/').split('?')[0];try{if((await cms.route(req,res,p))!==false)return}catch(e){console.error(e);if(!res.headersSent){res.writeHead(500);res.end('Server error')}return}
 if(p==='/blog'){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(pages.index())}
 if(p.startsWith('/blog/')){const x=pages.posts().find(v=>v.slug===decodeURIComponent(p.slice(6)));if(!x){res.writeHead(404);return res.end('Article not found')}res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(pages.post(x))}
 if(p==='/sitemap.xml'){const base='https://next-resource-live.onrender.com',ps=pages.posts();res.writeHead(200,{'Content-Type':'application/xml'});return res.end(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${base}/</loc></url><url><loc>${base}/blog</loc></url>${ps.map(x=>`<url><loc>${base}/blog/${encodeURIComponent(x.slug)}</loc><lastmod>${x.updatedAt.slice(0,10)}</lastmod></url>`).join('')}</urlset>`)}
