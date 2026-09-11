@@ -1,0 +1,1 @@
+window.addEventListener('DOMContentLoaded',()=>{const o=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in')),{threshold:.12});document.querySelectorAll('.statement,.services,.impact,.work,.approach,.about,.contact,.service-list a,.work-grid article,.steps div,.proof div').forEach(e=>{e.classList.add('reveal');o.observe(e)})});
