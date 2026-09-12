@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
 /* Next Resource — internal-page visual system
    Shared language: cinematic navy/black, cobalt accents, editorial grids, premium cards.
 */
@@ -8,7 +10,7 @@ body:not(:has(.hero)) .logo{color:#fff}
 body:not(:has(.hero)) .logo:before{border-color:#fff;color:#2f5cff}
 body:not(:has(.hero)) .logo>span{font-family:'IBM Plex Sans',sans-serif;letter-spacing:-.07em}
 body:not(:has(.hero)) .header nav a{color:#d5dbe1;transition:color .2s ease}
-body:not(:has(.hero)) .header nav a:hover,body:not(:has(.hero)) .header nav a[href$="/blog.html"]{color:#2f5cff}
+body:not(:has(.hero)) .header nav a:hover{color:#2f5cff}
 body:not(:has(.hero)) .btn.blue{background:#2f5cff;border-color:#2f5cff;color:#fff;border-radius:999px;padding:13px 22px}
 body:not(:has(.hero)) main{overflow:hidden}
 body:not(:has(.hero)) .page-hero{padding:150px max(4.5vw,32px) 78px;background:radial-gradient(circle at 78% 35%,rgba(47,92,255,.19),transparent 28%),linear-gradient(135deg,#081018 0%,#070b10 58%,#0b1119 100%);border-bottom:1px solid #26303a;min-height:470px;display:flex;flex-direction:column;justify-content:center}
