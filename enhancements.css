@@ -1,3 +1,5 @@
+@import url('/internal-theme.css');
+
 /* Next Resource — premium visual layer */
 :root{--nr-blue:#2f5cff;--nr-ink:#0b0f12;--nr-paper:#f4f3ef;--nr-line:#d5d8d9;--nr-muted:#69737c}
 body{background:var(--nr-paper)}
